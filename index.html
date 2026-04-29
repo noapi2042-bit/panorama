@@ -1,31 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>360 Viewer</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
 import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/webxr/VRButton.js';
 
-// シーン
 const scene = new THREE.Scene();
 
-// カメラ（←歪み対策：60に変更）
 const camera = new THREE.PerspectiveCamera(
-  60,
+  50,
   window.innerWidth / window.innerHeight,
   1,
-  1000
+  2000
 );
 
-// レンダラー
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-
-// VR有効化
 renderer.xr.enabled = true;
 renderer.xr.setReferenceSpaceType('local-floor');
 
 document.body.appendChild(renderer.domElement);
 document.body.appendChild(VRButton.createButton(renderer));
 
-// 球体（360背景）
-const geometry = new THREE.SphereGeometry(500, 60, 40);
+// 360背景
+const geometry = new THREE.SphereGeometry(1000, 64, 48);
 geometry.scale(-1, 1, 1);
 
 // 画像
@@ -34,10 +40,10 @@ const material = new THREE.MeshBasicMaterial({ map: texture });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
-// 高さ調整（←ここで「立ってる感」を作る）
+// 少しだけ立ち位置感を調整
 scene.position.y = -170;
 
-// マウス操作（PC用）
+// PC用のドラッグ操作
 let lon = 0;
 let lat = 0;
 let isDragging = false;
@@ -50,6 +56,12 @@ document.addEventListener('mousemove', (event) => {
     lon -= event.movementX * 0.05;
     lat += event.movementY * 0.05;
   }
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 // 描画
@@ -68,6 +80,8 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-// VR対応ループ
 renderer.setAnimationLoop(animate);
 </script>
+
+</body>
+</html>

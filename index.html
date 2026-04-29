@@ -14,12 +14,14 @@
   </style>
 </head>
 <body>
+
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
 import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/webxr/VRButton.js';
 
 const scene = new THREE.Scene();
 
+// 視野角を狭く（歪み防止）
 const camera = new THREE.PerspectiveCamera(
   35,
   window.innerWidth / window.innerHeight,
@@ -27,28 +29,32 @@ const camera = new THREE.PerspectiveCamera(
   5000
 );
 
+// レンダラー
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
+
+// VR ON
 renderer.xr.enabled = true;
 renderer.xr.setReferenceSpaceType('local-floor');
 
 document.body.appendChild(renderer.domElement);
 document.body.appendChild(VRButton.createButton(renderer));
 
-// 360背景用の球体
+// 球体（かなり大きくして圧迫感軽減）
 const geometry = new THREE.SphereGeometry(1500, 96, 64);
 geometry.scale(-1, 1, 1);
 
+// 画像読み込み
 const texture = new THREE.TextureLoader().load('room.png');
 const material = new THREE.MeshBasicMaterial({ map: texture });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
-// 目線の高さを少しだけ下げて、部屋の中にいる感じを調整
-scene.position.y = -170;
+// 高さ調整（ここが「立ってる感」）
+scene.position.y = -160;
 
-// PC用のドラッグ操作
+// マウス操作（PC用）
 let lon = 0;
 let lat = 0;
 let isDragging = false;
@@ -63,12 +69,14 @@ document.addEventListener('mousemove', (event) => {
   }
 });
 
+// リサイズ対応
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+// 描画
 function animate() {
   lat = Math.max(-85, Math.min(85, lat));
 
@@ -86,5 +94,6 @@ function animate() {
 
 renderer.setAnimationLoop(animate);
 </script>
+
 </body>
 </html>

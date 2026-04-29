@@ -4,6 +4,7 @@ import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js
 
 const scene = new THREE.Scene();
 
+// カメラ
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -11,9 +12,17 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
+// 👇 視点の高さ（ここ重要）
+camera.position.set(0, 170, 0);
+
+// レンダラー
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.xr.enabled = true;
+
+// 👇 床基準（超重要）
+renderer.xr.setReferenceSpaceType('local-floor');
+
+renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 document.body.appendChild(VRButton.createButton(renderer));
 

@@ -35,6 +35,7 @@ const texture = new THREE.TextureLoader().load('room.png');
 const material = new THREE.MeshBasicMaterial({ map: texture });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
+scene.position.y = -170;
 
 // 操作
 let lon = 0;

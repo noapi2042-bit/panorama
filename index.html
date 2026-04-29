@@ -23,8 +23,8 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 const renderer = new THREE.WebGLRenderer();
-// renderer.xr.enabled = true;
-// document.body.appendChild(VRButton.createButton(renderer));
+renderer.xr.enabled = true;
+document.body.appendChild(VRButton.createButton(renderer));
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -62,7 +62,6 @@ document.addEventListener('mousemove', (event) => {
 });
 
 function animate() {
-  requestAnimationFrame(animate);
 
   lat = Math.max(-85, Math.min(85, lat));
 
@@ -78,7 +77,7 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-animate();
+renderer.setAnimationLoop(animate);
 </script>
 
 </body>

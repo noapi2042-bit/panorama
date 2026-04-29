@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>360 Viewer</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/webxr/VRButton.js"></script>
+
+<script>
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  1,
+  1000
+);
+
+const renderer = new THREE.WebGLRenderer();
+// renderer.xr.enabled = true;
+// document.body.appendChild(VRButton.createButton(renderer));
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// 球体（内側表示）
+const geometry = new THREE.SphereGeometry(500, 60, 40);
+geometry.scale(-1, 1, 1);
+
+// 画像読み込み（←ここが重要）
+const texture = new THREE.TextureLoader().load('room.png');
+
+const material = new THREE.MeshBasicMaterial({ map: texture });
+const mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
+
+// マウス操作
+let lon = 0;
+let lat = 0;
+
+let isDragging = false;
+
+document.addEventListener('mousedown', () => {
+  isDragging = true;
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+});
+
+document.addEventListener('mousemove', (event) => {
+  if (isDragging) {
+   lon -= event.movementX * 0.1;
+   lat += event.movementY * 0.1;
+  }
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  lat = Math.max(-85, Math.min(85, lat));
+
+  const phi = THREE.MathUtils.degToRad(90 - lat);
+  const theta = THREE.MathUtils.degToRad(lon);
+
+  camera.lookAt(
+    500 * Math.sin(phi) * Math.cos(theta),
+    500 * Math.cos(phi),
+    500 * Math.sin(phi) * Math.sin(theta)
+  );
+
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+
+</body>
+</html>
